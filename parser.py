@@ -10,13 +10,11 @@ def parse_variants(text: str) -> list[str]:
     - символ /
     - перенос строки
     
-    Удаляет лишние пробелы и пустые элементы.
+    Удаляет лишние пробелы и пустые строки.
     """
     if not text or not text.strip():
         return []
     
-    # Заменяем все разделители на единый маркер для сплита
-    # Сначала обрабатываем переносы строк, затем запятые и слэши
     result = []
     
     # Разделяем по переносам строк
@@ -24,7 +22,8 @@ def parse_variants(text: str) -> list[str]:
     
     for line in lines:
         # В каждой строке разделяем по запятым или слэшам
-        parts = re.split(r'[,\|/]', line)
+        # Слэш может быть окружён пробелами: "фильм 1 / фильм 2"
+        parts = re.split(r'\s*,\s*|\s*/\s*', line)
         
         for part in parts:
             cleaned = part.strip()
