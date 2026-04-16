@@ -1,39 +1,37 @@
-import telebot
-from telebot import types
-import random
+import asyncio
+import logging
+from aiogram import Bot, Dispatcher
+from dotenv import load_dotenv
 import os
 
-# Токен берется из переменной окружения
-BOT_TOKEN = os.getenv('BOT_TOKEN')
+from handlers import router as handlers_router
+
+# Загружаем переменные окружения из .env
+load_dotenv()
+
+# Получаем токен бота
+BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 if not BOT_TOKEN:
-    raise ValueError("BOT_TOKEN не найден в переменных окружения")
+    raise ValueError("BOT_TOKEN не найден в переменных окружения. Проверьте файл .env")
 
-bot = telebot.TeleBot(BOT_TOKEN)
 
-@bot.message_handler(commands=['start'])
-def start(message):
-    # Создаем кнопку для получения случайного числа
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    btn_random = types.KeyboardButton('🎲 Получить случайное число')
-    markup.add(btn_random)
+async def main():
+    # Создаём бота и диспетчер
+    bot = Bot(token=BOT_TOKEN)
+    dp = Dispatcher()
     
-    bot.send_message(
-        message.chat.id, 
-        f"Привет, {message.from_user.first_name}! Нажми на кнопку, чтобы получить случайное число.",
-        reply_markup=markup
-    )
-
-@bot.message_handler(func=lambda message: message.text == '🎲 Получить случайное число')
-def get_random_number(message):
-    # Генерируем случайное число от 1 до 100
-    random_number = random.randint(1, 100)
-    bot.send_message(
-        message.chat.id, 
-        f"Ваше случайное число: **{random_number}**",
-        parse_mode='Markdown'
-    )
-
-if __name__ == '__main__':
+    # Подключаем роутер с хендлерами
+    dp.include_router(handlers_router)
+    
+    # Запускаем polling
     print("Бот запущен...")
-    bot.infinity_polling()
+    await dp.start_polling(bot)
+
+
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        print("Бот остановлен.")
