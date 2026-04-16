@@ -117,7 +117,7 @@ class TeamsState:
 @router.message(F.text == "/choose")
 async def cmd_choose(message: Message, state: FSMContext):
     """Обработчик команды /choose - запрашивает список вариантов."""
-    await state.set_state("waiting_for_variants")
+    await state.set_state(ChooseState.waiting_for_variants)
     await message.answer(
         "Отправьте список вариантов через запятую, / или с новой строки.\n"
         "Например: пицца, суши, бургер",
@@ -141,7 +141,7 @@ async def cancel_handler(message: Message, state: FSMContext):
     )
 
 
-@router.message(F.state == "waiting_for_variants")
+@router.message(F.state == ChooseState.waiting_for_variants)
 async def process_variants(message: Message, state: FSMContext):
     """Обрабатывает список вариантов и выбирает случайный."""
     text = message.text
@@ -160,7 +160,7 @@ async def process_variants(message: Message, state: FSMContext):
 @router.message(F.text == "/teams")
 async def cmd_teams(message: Message, state: FSMContext):
     """Обработчик команды /teams - запрашивает список участников."""
-    await state.set_state("waiting_for_members")
+    await state.set_state(TeamsState.waiting_for_members)
     await message.answer(
         "Отправьте список участников через запятую или с новой строки.\n"
         "Например: Анна, Борис, Виктор, Дарья",
@@ -174,7 +174,7 @@ async def btn_teams(message: Message, state: FSMContext):
     await cmd_teams(message, state)
 
 
-@router.message(F.state == "waiting_for_members")
+@router.message(F.state == TeamsState.waiting_for_members)
 async def process_teams(message: Message, state: FSMContext):
     """Обрабатывает список участников и делит на 2 команды."""
     text = message.text
