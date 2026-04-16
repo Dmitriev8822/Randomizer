@@ -146,6 +146,11 @@ async def process_variants(message: Message, state: FSMContext):
     """Обрабатывает список вариантов и выбирает случайный."""
     text = message.text
     
+    # Проверяем, не нажал ли пользователь кнопку "Отмена"
+    if text == "Отмена":
+        await cancel_handler(message, state)
+        return
+    
     variants = parse_variants(text)
     
     if len(variants) < 2:
