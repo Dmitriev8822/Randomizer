@@ -1,9 +1,13 @@
 import telebot
 from telebot import types
 import random
+import os
 
-# Замените на ваш токен от BotFather
-BOT_TOKEN = 'YOUR_BOT_TOKEN_HERE'
+# Токен берется из переменной окружения
+BOT_TOKEN = os.getenv('BOT_TOKEN')
+
+if not BOT_TOKEN:
+    raise ValueError("BOT_TOKEN не найден в переменных окружения")
 
 bot = telebot.TeleBot(BOT_TOKEN)
 
